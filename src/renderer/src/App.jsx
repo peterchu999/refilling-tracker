@@ -1,8 +1,20 @@
 import {Table} from "solid-bootstrap"
+import { For, createEffect, createSignal, onMount } from "solid-js"
 
 function App() {
   const ipcHandle = () => window.electron.ipcRenderer.send('ping')
-
+  const [data, setData] = createSignal([]);  
+  onMount(async () => {
+    const fetchedData = window.sqlite.refillDataDB?.fetchData()
+    setData(fetchedData)
+    const result = window.sqlite.refillDataDB?.insertData({
+      owner: "PT. ABC",
+      agent: "Halotron",
+      netto: 4.5,
+      refilling_date: new Date(),  
+      expire_date: new Date(),
+    })
+  })
   return (
     <>
       <div class="creator">Powered by electron-vite</div>
@@ -37,6 +49,16 @@ function App() {
             <td colSpan={2}>Larry the Bird</td>
             <td>@twitter</td>
           </tr>
+          <For each={data()}>
+            {
+              (datum) => <tr>
+              <td>{datum.id}</td>
+              <td>{datum.owner}</td>
+              <td>{datum.netto}</td>
+              <td>{datum.agent}</td>
+            </tr>
+            }
+          </For>
         </tbody>
       </Table>
       <div class="actions">
