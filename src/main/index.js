@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { initialize_db_checking } from '../database/DBManager'
 
 function createWindow() {
   // Create the browser window.
@@ -16,6 +17,8 @@ function createWindow() {
       sandbox: false
     }
   })
+
+  initialize_db_checking()
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

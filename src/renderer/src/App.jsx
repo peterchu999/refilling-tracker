@@ -7,10 +7,14 @@ function App() {
   onMount(async () => {
     const fetchedData = window.sqlite.refillDataDB?.fetchData()
     setData(fetchedData)
+    const result = window.sqlite.refillDataDB?.insertData({
+      owner: "PT. ABC",
+      agent: "Halotron",
+      netto: 4.5,
+      refilling_date: new Date(),  
+      expire_date: new Date(),
+    })
   })
-  createEffect(() => {
-    console.log(data())
-  },[])
   return (
     <>
       <div class="creator">Powered by electron-vite</div>
