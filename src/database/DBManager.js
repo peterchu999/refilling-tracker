@@ -10,7 +10,7 @@ const check_table_exists = (db) => {
 const migrate_table = (db) => {
   const migration_script = `
         CREATE TABLE extinguisher (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INTEGER PRIMARY KEY,
                 owner TEXT,
                 agent TEXT,
                 netto REAL,
