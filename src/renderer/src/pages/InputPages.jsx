@@ -3,9 +3,8 @@ import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import Datepicker from '../components/Datepicker'
 
-function InputPages(props) {
+function InputPages() {
   const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date }) => {
-    console.log({ owner, agent, netto, refilling_date, expire_date })
     const result = window.sqlite.refillDataDB?.insertData({
       owner,
       agent,
@@ -13,7 +12,6 @@ function InputPages(props) {
       refilling_date,
       expire_date
     })
-    console.log(result)
   }
 
   const onPrintQR = (e) => {
@@ -73,6 +71,7 @@ function InputPages(props) {
             <InputGroup hasValidation>
               <Form.Control
                 type="number"
+                step="0.1"
                 required
                 onChange={(e) => setForm({ ...form, netto: e.target.value })}
               />
