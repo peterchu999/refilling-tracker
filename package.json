@@ -21,6 +21,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "@solidjs/router": "^0.13.2",
     "better-sqlite3": "^9.5.0",
     "solid-bootstrap": "^1.0.19"
   },
