@@ -81,7 +81,6 @@ function DatabasePage() {
       }
     }
   }))
-  const [currentPage, setCurrentPage] = createSignal(0)
   const table = createSolidTable({
     get data() {
       return state.data ?? []
@@ -128,25 +127,33 @@ function DatabasePage() {
               </For>
             </tbody>
           </BTable>
-          <Pagination class="d-flex justify-content-center">
-            <Switch>
-              <Match when={table.getCanPreviousPage()}>
-                <Pagination.Prev onClick={table.previousPage} />
-                <Pagination.Item onClick={table.firstPage}>{1}</Pagination.Item>
-                <Pagination.Ellipsis />
-              </Match>
-            </Switch>
+          <Switch>
+            <Match when={table.getPageCount() > 1}>
+              <Pagination class="d-flex justify-content-center">
+                <Switch>
+                  <Match when={table.getCanPreviousPage()}>
+                    <Pagination.Prev onClick={table.previousPage} />
+                    <Pagination.Item onClick={table.firstPage}>{1}</Pagination.Item>
+                    <Pagination.Ellipsis />
+                  </Match>
+                </Switch>
 
-            <Pagination.Item active>{table.getState().pagination.pageIndex + 1}</Pagination.Item>
+                <Pagination.Item active>
+                  {table.getState().pagination.pageIndex + 1}
+                </Pagination.Item>
 
-            <Switch>
-              <Match when={table.getCanNextPage()}>
-                <Pagination.Ellipsis />
-                <Pagination.Item onClick={table.lastPage}>{table.getPageCount()}</Pagination.Item>
-                <Pagination.Next onClick={table.nextPage} />
-              </Match>
-            </Switch>
-          </Pagination>
+                <Switch>
+                  <Match when={table.getCanNextPage()}>
+                    <Pagination.Ellipsis />
+                    <Pagination.Item onClick={table.lastPage}>
+                      {table.getPageCount()}
+                    </Pagination.Item>
+                    <Pagination.Next onClick={table.nextPage} />
+                  </Match>
+                </Switch>
+              </Pagination>
+            </Match>
+          </Switch>
         </Match>
       </Switch>
     </Container>

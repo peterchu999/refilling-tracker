@@ -16,7 +16,8 @@ const migrate_table = (db) => {
                 netto REAL,
                 refilling_date DATE,
                 expire_date DATE,
-                is_qr_printed BOOLEAN DEFAULT FALSE
+                is_qr_printed BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `
   const query = db.prepare(migration_script)

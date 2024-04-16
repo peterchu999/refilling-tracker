@@ -16,7 +16,7 @@ const TABLE_NAME = 'extinguisher'
  */
 const fetchData = () => {
   try {
-    const query = `SELECT * FROM ${TABLE_NAME}`
+    const query = `SELECT * FROM ${TABLE_NAME} ORDER BY created_at DESC`
     const readQuery = db.prepare(query)
     const rowList = readQuery.all()
     return rowList

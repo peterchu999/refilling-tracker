@@ -71,6 +71,7 @@ function InputPages() {
             <InputGroup hasValidation>
               <Form.Control
                 type="number"
+                step="0.1"
                 required
                 onChange={(e) => setForm({ ...form, netto: e.target.value })}
               />
