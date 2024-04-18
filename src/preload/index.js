@@ -4,7 +4,8 @@ import  refillDataDB from '../database/RefillingDataManager'
 
 // Custom APIs for renderer
 const api = {
-  onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value))
+  onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value)),
+  cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection')
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

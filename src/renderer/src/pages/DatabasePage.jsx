@@ -5,8 +5,8 @@ import {
   flexRender,
   getPaginationRowModel
 } from '@tanstack/solid-table'
-import { Container, Table as BTable, Badge, Pagination, Button, Col } from 'solid-bootstrap'
-import { For, Match, Switch, createEffect, createSignal } from 'solid-js'
+import { Container, Table as BTable, Badge, Pagination, Button, Col, Row } from 'solid-bootstrap'
+import { For, Match, Switch, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { printQRToPdfFile } from '../../../utils/qrcode'
 
 const today = new Date()
@@ -106,8 +106,14 @@ function DatabasePage() {
     enableMultiRowSelection: true
   })
 
-  window.api.onClearPrintQRSelection((value) => {
-    table.resetRowSelection(value)
+  onMount(() => {
+    window.api.onClearPrintQRSelection((value) => {
+      table.resetRowSelection(value)
+    })
+  })
+
+  onCleanup(() => {
+    window.api.cleanOnClearPrintQRSelection()
   })
 
   createEffect(() => {
@@ -122,25 +128,25 @@ function DatabasePage() {
   const printQR = async () => {
     const data = table.getSelectedRowModel().rows.map(({ original }) => original)
     const state = printQRToPdfFile(data)
-    console.log(state)
-    state.then((data) => {
-      console.log("called after save", data)
-    })
-    // console.log("Called after save")
   }
 
   return (
     <Container fluid>
       <h2>List Of Refilling</h2>
-      <Container>
-        <Col>
-          <Button onClick={resetTableSelection}>Reset Selection</Button>
-        </Col>
-        <Col>
-          Selected Row:
-          {selectedCount()}
-          <Button onClick={printQR}>Print QR</Button>
-        </Col>
+      <Container fluid>
+        <Row>
+          <Col>
+            <Button class="btn-sm btn-warning text-bold" onClick={resetTableSelection}>
+              Reset Selection
+            </Button>
+          </Col>
+          <Col class="d-flex align-items-center justify-content-end">
+            Selected Row: {selectedCount()}
+            <Button class="mx-2" onClick={printQR}>
+              Print QR
+            </Button>
+          </Col>
+        </Row>
       </Container>
       <Switch>
         <Match when={state.isLoading}></Match>

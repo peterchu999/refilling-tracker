@@ -54,7 +54,7 @@ export const printQRToPdfFile = async (data) => {
       const titleXCoor = spacing * ((i % 3) + 3) + qrWidth * (i % 3) + (qrWidth - titleWidth) / 2
       const titleYCoor = qrHeight + 15 + rowVerticalCoordinate
       // Add title
-      doc.text(titleXCoor, titleYCoor, title, { align: 'center' })
+      doc.text(titleXCoor, titleYCoor, title)
 
       const is3rdItemOnRow = i % 3 == 0
       if (is3rdItemOnRow) {
@@ -67,7 +67,7 @@ export const printQRToPdfFile = async (data) => {
       }
     }
 
-    return doc.save('qrcode.pdf', {returnPromise: true})
+    doc.save('qrcode.pdf')
   } catch (err) {
     console.log(err)
   }
