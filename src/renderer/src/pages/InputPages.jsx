@@ -2,8 +2,11 @@ import { Container, Form, Row, InputGroup, Button, Col } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import Datepicker from '../components/Datepicker'
+import { printQRToPdfFile } from '../../../utils/qrcode'
+import { useNavigate } from '@solidjs/router'
 
 function InputPages() {
+  const navigate = useNavigate();
   const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date }) => {
     const result = window.sqlite.refillDataDB?.insertData({
       owner,
@@ -12,16 +15,9 @@ function InputPages() {
       refilling_date,
       expire_date
     })
+    return result
   }
-
-  const onPrintQR = (e) => {
-    onSubmit(e)
-    // TODO: handle print QR
-  }
-
-  const onSubmit = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const validateAndInsertData = (e) => {
     const formTar = e.currentTarget
     if (formTar.checkValidity() === false) {
       setValidated(false)
@@ -29,8 +25,20 @@ function InputPages() {
 
     // TODO: add more comprehend validation
     setValidated(true)
+    return insertDataToDB(form)
+  }
 
-    insertDataToDB(form)
+  const onPrintQR = async (e) => {
+    const {lastInsertRowid} = await validateAndInsertData(e)
+    await printQRToPdfFile([{id: lastInsertRowid, ...form}])
+    navigate("/",{replace: true})
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    await validateAndInsertData(e)
+    navigate("/",{replace: true})
   }
 
   const [validated, setValidated] = createSignal(false)

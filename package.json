@@ -25,6 +25,8 @@
     "@tanstack/solid-query": "^5.30.3",
     "@tanstack/solid-table": "^8.16.0",
     "better-sqlite3": "^9.5.0",
+    "jspdf": "^2.5.1",
+    "qrcode": "^1.5.3",
     "solid-bootstrap": "^1.0.19"
   },
   "devDependencies": {

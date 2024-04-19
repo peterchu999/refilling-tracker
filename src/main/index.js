@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, webContents } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -27,6 +27,16 @@ function createWindow() {
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
+  })
+
+  mainWindow.webContents.session.on("will-download", (_event, item, _webcontent) => {
+    item.once('done', (_, state) => {
+      if (state === 'completed') {
+        mainWindow.webContents.send('clear-print-qr-selection', true)
+      } else {
+        mainWindow.webContents.send('clear-print-qr-selection', false)
+      }
+    })
   })
 
   // HMR for renderer base on electron-vite cli.

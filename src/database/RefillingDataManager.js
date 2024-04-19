@@ -44,7 +44,7 @@ const insertData = ({ owner, agent, netto, refilling_date, expire_date }) => {
     VALUES (?,?,?,?,?, 0)`
     const insertQuery = db.prepare(insertScript)
     const insertResult = insertQuery.run(owner, agent, netto, refilling_date, expire_date)
-    return insertResult.changes
+    return insertResult
   } catch (err) {
     console.error(err)
     throw err

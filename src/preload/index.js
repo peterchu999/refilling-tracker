@@ -1,9 +1,12 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import  refillDataDB from '../database/RefillingDataManager'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value)),
+  cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection')
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

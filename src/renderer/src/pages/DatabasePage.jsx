@@ -5,13 +5,25 @@ import {
   flexRender,
   getPaginationRowModel
 } from '@tanstack/solid-table'
-import { Container, Table as BTable, Badge, Pagination } from 'solid-bootstrap'
-import { For, Match, Switch, createSignal } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { Container, Table as BTable, Badge, Pagination, Button, Col, Row } from 'solid-bootstrap'
+import { For, Match, Switch, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import { printQRToPdfFile } from '../../../utils/qrcode'
 
 const today = new Date()
 
 const columns = [
+  {
+    cell: (info) => {
+      return (
+        <input
+          type="checkbox"
+          checked={info.row.getIsSelected()}
+          onChange={(e) => info.row.toggleSelected(e.target.checked)}
+        />
+      )
+    },
+    header: 'select'
+  },
   {
     accessorKey: 'id',
     cell: (info) => info.getValue(),
@@ -70,6 +82,8 @@ const columns = [
 ]
 
 function DatabasePage() {
+  const [selectedCount, setSelectedCount] = createSignal(0)
+
   const state = createQuery(() => ({
     queryKey: ['extinguisher'],
     queryFn: async () => {
@@ -81,17 +95,59 @@ function DatabasePage() {
       }
     }
   }))
+
   const table = createSolidTable({
     get data() {
       return state.data ?? []
     },
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
+    getPaginationRowModel: getPaginationRowModel(),
+    enableMultiRowSelection: true
   })
+
+  onMount(() => {
+    window.api.onClearPrintQRSelection((value) => {
+      table.resetRowSelection(value)
+    })
+  })
+
+  onCleanup(() => {
+    window.api.cleanOnClearPrintQRSelection()
+  })
+
+  createEffect(() => {
+    const { rows } = table.getSelectedRowModel()
+    setSelectedCount(rows.length)
+  })
+
+  const resetTableSelection = () => {
+    table.resetRowSelection(true)
+  }
+
+  const printQR = async () => {
+    const data = table.getSelectedRowModel().rows.map(({ original }) => original)
+    const state = printQRToPdfFile(data)
+  }
+
   return (
     <Container fluid>
       <h2>List Of Refilling</h2>
+      <Container fluid>
+        <Row>
+          <Col>
+            <Button class="btn-sm btn-warning text-bold" onClick={resetTableSelection}>
+              Reset Selection
+            </Button>
+          </Col>
+          <Col class="d-flex align-items-center justify-content-end">
+            Selected Row: {selectedCount()}
+            <Button class="mx-2" onClick={printQR}>
+              Print QR
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Switch>
         <Match when={state.isLoading}></Match>
         <Match when={state.data != undefined}>
