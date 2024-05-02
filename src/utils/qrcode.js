@@ -2,13 +2,7 @@ import QRCode from 'qrcode'
 import { jsPDF } from 'jspdf'
 
 const convertRefillDataToHtml = ({ owner, agent, netto, refilling_date, expire_date }) => {
-  return `
-  <p><b>Owner: ${owner} </b></p>
-  <p><b>Agent: ${agent} </b></p>
-  <p><b>Netto: ${netto} Kg</b></p>
-  <p><b>Refilling Date: ${refilling_date} </b></p>
-  <p><b>Expire Date: ${expire_date} </b></p>
-  `
+  return `https://peterchu999.github.io/r-tracker-ui?owner=${encodeURIComponent(owner)}&agent=${encodeURIComponent(agent)}&netto=${encodeURIComponent(netto)}&refilling_date=${encodeURIComponent(refilling_date)}&expire_date=${encodeURIComponent(expire_date)}`
 }
 
 const generateQRCodeUrl = async (string) => {
