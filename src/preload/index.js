@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import  refillDataDB from '../database/RefillingDataManager'
+import  ownerDataDB from '../database/OwnerDataManager'
 import 'dotenv/config'
 import { fetchOwners, insertOwner, updateOwner } from '../database/online/Owner'
 
@@ -23,6 +24,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld("sqlite", {
       refillDataDB,
+      ownerDataDB
     })
   } catch (error) {
     console.error(error)
