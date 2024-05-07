@@ -1,19 +1,35 @@
 import { Container, Form, Row, InputGroup, Button, Col } from 'solid-bootstrap'
-import { createSignal } from 'solid-js'
+import { For, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import Datepicker from '../components/Datepicker'
 import { printQRToPdfFile } from '../../../utils/qrcode'
 import { useNavigate } from '@solidjs/router'
+import { createQuery } from '@tanstack/solid-query'
 
 function InputPages() {
   const navigate = useNavigate();
-  const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date }) => {
+
+  const state = createQuery(() => ({
+    queryKey: ['owners'],
+    queryFn: async () => {
+      try {
+        const result = window.sqlite.ownerDataDB?.fetchOwnerData()
+        return result
+      } catch (error) {
+        throw error
+      }
+    }
+  }))
+
+  const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date, owner_id, tank_number }) => {
     const result = window.sqlite.refillDataDB?.insertData({
       owner,
       agent,
       netto,
       refilling_date,
-      expire_date
+      expire_date,
+      owner_id,
+      tank_number
     })
     return result
   }
@@ -22,7 +38,6 @@ function InputPages() {
     if (formTar.checkValidity() === false) {
       setValidated(false)
     }
-
     // TODO: add more comprehend validation
     setValidated(true)
     return insertDataToDB(form)
@@ -46,9 +61,11 @@ function InputPages() {
   const [form, setForm] = createStore({
     owner: '',
     agent: '',
+    owner_id: null,
     netto: null,
     refilling_date: null,
-    expire_date: null
+    expire_date: null,
+    tank_number: null
   })
 
   return (
@@ -61,8 +78,25 @@ function InputPages() {
             <Form.Control
               required
               type="text"
-              onChange={(e) => setForm({ ...form, owner: e.target.value })}
+              list='owner'
+              disabled={state.isError || state.isLoading}
+              onChange={e => {
+                const value = e.target.value
+                if(value.includes("||")) {
+                  const [id, name] = value.split("||")
+                  setForm({ ...form, owner: name, owner_id: id })  
+                  e.target.value = name
+                }
+                
+              }}
             />
+            <datalist id='owner'>
+              <For each={state.data || []}>{data => {
+                return <option  value={[data.id, data.name].join("||")} label={data.name}/>
+              }}
+              </For>
+            </datalist>
+            
             <Form.Control.Feedback type="invalid">Owner Required</Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="4" controlId="validationCustom02">
@@ -89,7 +123,15 @@ function InputPages() {
           </Form.Group>
         </Row>
         <Row class="mb-3">
-          <Form.Group as={Col} md="6" controlId="validationCustom03">
+          <Form.Group as={Col} md="4" controlId="validationCustom02">
+            <Form.Label>No. Tabung</Form.Label>
+            <Form.Control
+              type="text"
+              onChange={(e) => setForm({ ...form, tank_number: e.target.value })}
+            />
+            <Form.Control.Feedback type="invalid">Agent Required</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom03">
             <Form.Label>Refilling Date</Form.Label>
             <Datepicker
               required
@@ -97,7 +139,7 @@ function InputPages() {
             />
             <Form.Control.Feedback type="invalid">Refilling Date required</Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="6" controlId="validationCustom04">
+          <Form.Group as={Col} md="4" controlId="validationCustom04">
             <Form.Label>Expire Date</Form.Label>
             <Datepicker
               required

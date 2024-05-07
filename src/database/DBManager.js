@@ -18,7 +18,7 @@ const migrate_table = async (db) => {
   const create_extinguisher = `
     CREATE TABLE extinguisher (
             id INTEGER PRIMARY KEY,
-            tank_number TEXT,
+            tank_number TEXT NULL,
             owner_id  INTEGER NOT NULL,
             owner TEXT,
             agent TEXT,

@@ -22,10 +22,9 @@ function OwnerPage() {
     try {
       const salt = generateSaltKey()
       const encrypted_password = encryptPassword(form.password,salt)
-      // const result = await window.api.insertOwner({...form, password: encrypted_password, salt})
-      const inner = window.sqlite.ownerDataDB.insertOwnerData({...form})
-      // console.log(result)
-      console.log(inner)
+      const result = await window.api.insertOwner({...form, password: encrypted_password, salt})
+      const inner = window.sqlite.ownerDataDB.insertOwnerData({...form, id: result.id})
+      return inner
     } catch (error) {
       console.log(error)
     }

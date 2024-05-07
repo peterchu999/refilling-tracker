@@ -16,7 +16,7 @@ const TABLE_NAME = 'owners'
  */
 const fetchOwnerData = () => {
   try {
-    const query = `SELECT * FROM ${TABLE_NAME} ORDER BY created_at DESC`
+    const query = `SELECT * FROM ${TABLE_NAME}`
     const readQuery = db.prepare(query)
     const rowList = readQuery.all()
     return rowList
