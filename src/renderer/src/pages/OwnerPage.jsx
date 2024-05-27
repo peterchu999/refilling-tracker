@@ -1,7 +1,8 @@
-import { Container, Form, Row, InputGroup, Button, Col } from 'solid-bootstrap'
-import { createSignal } from 'solid-js'
+import { Container, Form, Row, InputGroup, Button, Col, Table as BTable } from 'solid-bootstrap'
+import { Match, Switch, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { encryptPassword, generateSaltKey } from '../../../utils/auth'
+import { createQuery } from '@tanstack/solid-query'
 
 function OwnerPage() {
   const validateAndInsertData = (e) => {
@@ -22,23 +23,34 @@ function OwnerPage() {
     try {
       const salt = generateSaltKey()
       const encryptedPassword = window.api.encryptPassword(form.password)
-      const result = await window.api.insertOwner({...form, password: encryptedPassword, salt})
-      const inner = window.sqlite.ownerDataDB.insertOwnerData({...form, id: result.id})
+      const result = await window.api.insertOwner({ ...form, password: encryptedPassword, salt })
+      const inner = window.sqlite.ownerDataDB.insertOwnerData({ ...form, id: result.id })
       setValidated(true)
       return inner
     } catch (error) {
       setValidated(false)
       alert(error)
     }
-    
   }
+
+  const owners = createQuery(() => ({
+    queryKey: ['owners'],
+    queryFn: async () => {
+      try {
+        const result = window.api.fetchOwners()
+        return result
+      } catch (error) {
+        throw error
+      }
+    }
+  }))
 
   const [validated, setValidated] = createSignal(false)
 
   const [form, setForm] = createStore({
     name: null,
     username: null,
-    password: null,
+    password: null
   })
 
   return (
@@ -78,6 +90,37 @@ function OwnerPage() {
         </Row>
         <Button type="submit">Add Data</Button>
       </Form>
+      <Switch>
+        <Match when={owners.isLoading}>
+          <p>Is loading</p>
+        </Match>
+        <Match when={owners.isError}>
+          <Text>Is loading</Text>
+        </Match>
+        <Match when={owners.data}>
+          <BTable class='mt-3' striped bordered hover responsive size="sm">
+            <thead>
+              <tr>
+                <th>Nama Perusahaan</th>
+                <th>Username Perusahaan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <For each={owners.data}>
+                {(datum) => {
+                  console.log(datum)
+                  return (
+                    <tr>
+                      <td>{datum.name}</td>
+                      <td>{datum.username}</td>
+                    </tr>
+                  )
+                }}
+              </For>
+            </tbody>
+          </BTable>
+        </Match>
+      </Switch>
     </Container>
   )
 }
