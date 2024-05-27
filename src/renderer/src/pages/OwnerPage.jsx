@@ -11,7 +11,7 @@ function OwnerPage() {
     }
 
     // TODO: add more comprehend validation
-    setValidated(true)
+    // setValidated(true)
   }
 
   const onSubmit = async (e) => {
@@ -21,12 +21,14 @@ function OwnerPage() {
 
     try {
       const salt = generateSaltKey()
-      const encrypted_password = encryptPassword(form.password,salt)
-      const result = await window.api.insertOwner({...form, password: encrypted_password, salt})
+      const encryptedPassword = window.api.encryptPassword(form.password)
+      const result = await window.api.insertOwner({...form, password: encryptedPassword, salt})
       const inner = window.sqlite.ownerDataDB.insertOwnerData({...form, id: result.id})
+      setValidated(true)
       return inner
     } catch (error) {
-      console.log(error)
+      setValidated(false)
+      alert(error)
     }
     
   }

@@ -26,6 +26,7 @@
     "@tanstack/solid-table": "^8.16.0",
     "@vercel/postgres-kysely": "^0.8.0",
     "better-sqlite3": "^9.5.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "jspdf": "^2.5.1",
     "kysely": "^0.27.3",

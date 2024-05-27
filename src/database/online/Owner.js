@@ -17,5 +17,5 @@ export const updateOwner = async (id, { name, username, password }) =>
       ...(!!username && { username }),
       ...(!!password && { password })
     })
-    .where('id', '=', id)
+    .where('id', '=', id) 
     .executeTakeFirst()
