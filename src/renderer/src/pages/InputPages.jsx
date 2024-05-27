@@ -22,16 +22,33 @@ function InputPages() {
   }))
 
   const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date, owner_id, tank_number }) => {
-    const result = window.sqlite.refillDataDB?.insertData({
-      owner,
-      agent,
-      netto,
-      refilling_date,
-      expire_date,
-      owner_id,
-      tank_number
-    })
-    return result
+    try {
+      const res = window.api.insertExtinguisher({
+        owner,
+        agent,
+        netto,
+        refilling_date,
+        expire_date,
+        owner_id,
+        tank_number
+      })
+      const result = window.sqlite.refillDataDB?.insertData({
+        owner,
+        agent,
+        netto,
+        refilling_date,
+        expire_date,
+        owner_id,
+        tank_number
+      })
+      
+
+      console.log(res)
+      return result
+    } catch (err) {
+      console.error(err)
+    }
+    
   }
   const validateAndInsertData = (e) => {
     const formTar = e.currentTarget

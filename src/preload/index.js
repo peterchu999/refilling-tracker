@@ -5,6 +5,7 @@ import  ownerDataDB from '../database/OwnerDataManager'
 import 'dotenv/config'
 import { fetchOwners, insertOwner, updateOwner } from '../database/online/Owner'
 import { encryptPassword as uEncryptPassword } from '../utils/auth'
+import { insertExtinguisher, updateExtinguisher } from '../database/online/Extinguisher'
 
 
 // Custom APIs for renderer
@@ -12,6 +13,8 @@ const api = {
   insertOwner,
   fetchOwners,
   updateOwner,
+  insertExtinguisher,
+  updateExtinguisher,
   onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value)),
   cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection'),
   encryptPassword: (password) => uEncryptPassword(password, process.env.SALT_KEY)

@@ -108,7 +108,6 @@ function OwnerPage() {
             <tbody>
               <For each={owners.data}>
                 {(datum) => {
-                  console.log(datum)
                   return (
                     <tr>
                       <td>{datum.name}</td>
