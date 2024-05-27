@@ -1,11 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import  refillDataDB from '../database/RefillingDataManager'
+import  ownerDataDB from '../database/OwnerDataManager'
+import 'dotenv/config'
+import { fetchOwners, insertOwner, updateOwner } from '../database/online/Owner'
+import { encryptPassword as uEncryptPassword } from '../utils/auth'
+
 
 // Custom APIs for renderer
 const api = {
+  insertOwner,
+  fetchOwners,
+  updateOwner,
   onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value)),
-  cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection')
+  cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection'),
+  encryptPassword: (password) => uEncryptPassword(password, process.env.SALT_KEY)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
@@ -17,6 +26,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld("sqlite", {
       refillDataDB,
+      ownerDataDB
     })
   } catch (error) {
     console.error(error)

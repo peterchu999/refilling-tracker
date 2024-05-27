@@ -1,14 +1,12 @@
 import db from './DBManager'
 
-const TABLE_NAME = 'extinguisher'
+const TABLE_NAME = 'owners'
 
 /**
  *
  * @returns {{
  *  id: number,
  *  owner: string,
- *  owner_id: number,
- *  tank_number: text,
  *  agent: string,
  *  netto: number,
  *  refilling_date: Date,
@@ -16,9 +14,9 @@ const TABLE_NAME = 'extinguisher'
  *  is_qr_printed: boolean
  * }} refillingData
  */
-const fetchData = () => {
+const fetchOwnerData = () => {
   try {
-    const query = `SELECT * FROM ${TABLE_NAME} ORDER BY created_at DESC`
+    const query = `SELECT * FROM ${TABLE_NAME}`
     const readQuery = db.prepare(query)
     const rowList = readQuery.all()
     return rowList
@@ -31,8 +29,6 @@ const fetchData = () => {
 /**
  * Funcion to insert refilling data to database, Id would be auto incremented
  * @param {{
- *  owner_id: number,
- *  tank_number: number,
  *  owner: string,
  *  agent: string,
  *  netto: number,
@@ -41,12 +37,12 @@ const fetchData = () => {
  * }} data refilling datatype
  *
  */
-const insertData = ({ owner, agent, netto, refilling_date, expire_date, tank_number, owner_id }) => {
+const insertOwnerData = ({ id, name, username }) => { 
   try {
-    const insertScript = `INSERT INTO ${TABLE_NAME} (owner, owner_id, tank_number, agent, netto, refilling_date, expire_date, is_qr_printed)
-    VALUES (?,?,?,?,?,?,?, 0)`
+    const insertScript = `INSERT INTO ${TABLE_NAME} (id, name, username)
+    VALUES (?,?,?)`
     const insertQuery = db.prepare(insertScript)
-    const insertResult = insertQuery.run(owner, owner_id, tank_number, agent, netto, refilling_date, expire_date)
+    const insertResult = insertQuery.run( id, name, username )
     return insertResult
   } catch (err) {
     console.error(err)
@@ -55,6 +51,6 @@ const insertData = ({ owner, agent, netto, refilling_date, expire_date, tank_num
 }
 
 export default {
-  fetchData,
-  insertData
+  fetchOwnerData,
+  insertOwnerData
 }

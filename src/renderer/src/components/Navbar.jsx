@@ -9,6 +9,7 @@ function CustomNavbar() {
           <Nav class="me-auto">
             <Nav.Link href="/">Database</Nav.Link>
             <Nav.Link href="/input">Input Data</Nav.Link>
+            <Nav.Link href="/owner">Owner Management</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
