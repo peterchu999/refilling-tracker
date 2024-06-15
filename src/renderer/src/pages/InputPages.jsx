@@ -21,43 +21,38 @@ function InputPages() {
     }
   }))
 
-  const insertDataToDB = ({ owner, agent, netto, refilling_date, expire_date, owner_id, tank_number }) => {
-    try {
-      const res = window.api.insertExtinguisher({
+  const insertDataToDB = async ({ owner, agent, netto, refilling_date, expire_date, owner_id, tank_number }) => {
+      const insertOnlineExtinguisher = () => window.api.insertExtinguisher({
         owner,
         agent,
         netto,
         refilling_date,
         expire_date,
-        owner_id,
+        owner_id: owner,
         tank_number
       })
-      const result = window.sqlite.refillDataDB?.insertData({
-        owner,
-        agent,
-        netto,
-        refilling_date,
-        expire_date,
-        owner_id,
-        tank_number
-      })
-      
 
-      console.log(res)
+      const result = await window.sqlite.refillDataDB?.insertData({
+        owner,
+        agent,
+        netto,
+        refilling_date,
+        expire_date,
+        owner_id,
+        tank_number
+      }, insertOnlineExtinguisher)
       return result
-    } catch (err) {
-      console.error(err)
-    }
     
   }
-  const validateAndInsertData = (e) => {
+  const validateAndInsertData = async (e) => {
     const formTar = e.currentTarget
     if (formTar.checkValidity() === false) {
       setValidated(false)
     }
     // TODO: add more comprehend validation
     setValidated(true)
-    return insertDataToDB(form)
+    const result = await insertDataToDB(form)
+    return result
   }
 
   const onPrintQR = async (e) => {
@@ -69,8 +64,15 @@ function InputPages() {
   const onSubmit = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    await validateAndInsertData(e)
-    navigate("/",{replace: true})
+    try {
+      await validateAndInsertData(e)
+      navigate("/",{replace: true})
+    } catch (err) {
+      console.error(err, "go out")
+      alert(err)
+      setValidated(false)
+    }
+    
   }
 
   const [validated, setValidated] = createSignal(false)

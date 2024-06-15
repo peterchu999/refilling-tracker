@@ -41,15 +41,34 @@ const fetchData = () => {
  * }} data refilling datatype
  *
  */
-const insertData = ({ owner, agent, netto, refilling_date, expire_date, tank_number, owner_id }) => {
+const insertData = async (
+  { owner, agent, netto, refilling_date, expire_date, tank_number, owner_id },
+  cb = async () => {}
+) => {
+  const begin = db.prepare('BEGIN')
+  const commit = db.prepare('COMMIT')
+  const rollback = db.prepare('ROLLBACK')
+  begin.run()
   try {
     const insertScript = `INSERT INTO ${TABLE_NAME} (owner, owner_id, tank_number, agent, netto, refilling_date, expire_date, is_qr_printed)
     VALUES (?,?,?,?,?,?,?, 0)`
+
     const insertQuery = db.prepare(insertScript)
-    const insertResult = insertQuery.run(owner, owner_id, tank_number, agent, netto, refilling_date, expire_date)
-    return insertResult
+    const insertResult = insertQuery.run(
+      owner,
+      owner_id,
+      tank_number,
+      agent,
+      netto,
+      refilling_date,
+      expire_date
+    )
+    const cbResult = await cb()
+    commit.run()
+    return { insertResult, cbResult }
   } catch (err) {
     console.error(err)
+    rollback.run()
     throw err
   }
 }
