@@ -7,8 +7,8 @@ import { useNavigate } from '@solidjs/router'
 import { createQuery } from '@tanstack/solid-query'
 
 function InputPages() {
-  const navigate = useNavigate();
-
+  const navigate = useNavigate()
+  const [validated, setValidated] = createSignal(false)
   const state = createQuery(() => ({
     queryKey: ['owners'],
     queryFn: async () => {
@@ -21,8 +21,17 @@ function InputPages() {
     }
   }))
 
-  const insertDataToDB = async ({ owner, agent, netto, refilling_date, expire_date, owner_id, tank_number }) => {
-      const insertOnlineExtinguisher = () => window.api.insertExtinguisher({
+  const insertDataToDB = async ({
+    owner,
+    agent,
+    netto,
+    refilling_date,
+    expire_date,
+    owner_id,
+    tank_number
+  }) => {
+    const insertOnlineExtinguisher = () =>
+      window.api.insertExtinguisher({
         owner,
         agent,
         netto,
@@ -32,7 +41,8 @@ function InputPages() {
         tank_number
       })
 
-      const result = await window.sqlite.refillDataDB?.insertData({
+    const result = await window.sqlite.refillDataDB?.insertData(
+      {
         owner,
         agent,
         netto,
@@ -40,10 +50,12 @@ function InputPages() {
         expire_date,
         owner_id,
         tank_number
-      }, insertOnlineExtinguisher)
-      return result
-    
+      },
+      insertOnlineExtinguisher
+    )
+    return result
   }
+
   const validateAndInsertData = async (e) => {
     const formTar = e.currentTarget
     if (formTar.checkValidity() === false) {
@@ -56,9 +68,9 @@ function InputPages() {
   }
 
   const onPrintQR = async (e) => {
-    const {lastInsertRowid} = await validateAndInsertData(e)
-    await printQRToPdfFile([{id: lastInsertRowid, ...form}])
-    navigate("/",{replace: true})
+    const { lastInsertRowid } = await validateAndInsertData(e)
+    await printQRToPdfFile([{ id: lastInsertRowid, ...form }])
+    navigate('/', { replace: true })
   }
 
   const onSubmit = async (e) => {
@@ -66,16 +78,12 @@ function InputPages() {
     e.stopPropagation()
     try {
       await validateAndInsertData(e)
-      navigate("/",{replace: true})
+      navigate('/', { replace: true })
     } catch (err) {
-      console.error(err, "go out")
       alert(err)
       setValidated(false)
     }
-    
   }
-
-  const [validated, setValidated] = createSignal(false)
 
   const [form, setForm] = createStore({
     owner: '',
@@ -97,25 +105,25 @@ function InputPages() {
             <Form.Control
               required
               type="text"
-              list='owner'
+              list="owner"
               disabled={state.isError || state.isLoading}
-              onChange={e => {
+              onChange={(e) => {
                 const value = e.target.value
-                if(value.includes("||")) {
-                  const [id, name] = value.split("||")
-                  setForm({ ...form, owner: name, owner_id: id })  
+                if (value.includes('||')) {
+                  const [id, name] = value.split('||')
+                  setForm({ ...form, owner: name, owner_id: id })
                   e.target.value = name
                 }
-                
               }}
             />
-            <datalist id='owner'>
-              <For each={state.data || []}>{data => {
-                return <option  value={[data.id, data.name].join("||")} label={data.name}/>
-              }}
+            <datalist id="owner">
+              <For each={state.data || []}>
+                {(data) => {
+                  return <option value={[data.id, data.name].join('||')} label={data.name} />
+                }}
               </For>
             </datalist>
-            
+
             <Form.Control.Feedback type="invalid">Owner Required</Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="4" controlId="validationCustom02">

@@ -73,7 +73,52 @@ const insertData = async (
   }
 }
 
+/**
+ * Funcion to insert refilling data to database, Id would be auto incremented
+ * @param {{
+*  owner_id: number,
+*  tank_number: number,
+*  owner: string,
+*  agent: string,
+*  netto: number,
+*  refilling_date: Date,
+*  expire_date: Date,
+* }} data refilling datatype
+*
+*/
+const updateData = async (
+ { id, agent, netto, refilling_date, expire_date, tank_number },
+ cb = async () => {}
+) => {
+ const begin = db.prepare('BEGIN')
+ const commit = db.prepare('COMMIT')
+ const rollback = db.prepare('ROLLBACK')
+ begin.run()
+ try {
+   const insertScript = `UPDATE ${TABLE_NAME} SET tank_number = ?, agent = ?, netto = ?, refilling_date = ?, expire_date = ?, is_qr_printed = 0
+   WHERE id = ?`
+
+   const insertQuery = db.prepare(insertScript)
+   const insertResult = insertQuery.run(
+     tank_number,
+     agent,
+     netto,
+     refilling_date,
+     expire_date,
+     id
+   )
+   const cbResult = await cb()
+   commit.run()
+   return { insertResult, cbResult }
+ } catch (err) {
+   console.error(err)
+   rollback.run()
+   throw err
+ }
+}
+
 export default {
   fetchData,
-  insertData
+  insertData,
+  updateData,
 }
