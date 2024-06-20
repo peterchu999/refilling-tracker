@@ -37,7 +37,7 @@ const fetchOwnerData = () => {
  * }} data refilling datatype
  *
  */
-const insertOwnerData = async ({ id, name, username }, cb = async () => {}) => {
+const insertOwnerData = async ({ name, username }, cb = async () => {}) => {
   const begin = db.prepare('BEGIN')
   const commit = db.prepare('COMMIT')
   const rollback = db.prepare('ROLLBACK')
@@ -46,10 +46,10 @@ const insertOwnerData = async ({ id, name, username }, cb = async () => {}) => {
     const insertScript = `INSERT INTO ${TABLE_NAME} (id, name, username)
     VALUES (?,?,?)`
     const insertQuery = db.prepare(insertScript)
-    const insertResult = insertQuery.run(id, name, username)
+    const insertResult = insertQuery.run(null, name, username)
     const cbResult = await cb()
     commit.run()
-    return {insertResult, cbResult}
+    return { insertResult, cbResult }
   } catch (err) {
     console.error(err)
     rollback.run()

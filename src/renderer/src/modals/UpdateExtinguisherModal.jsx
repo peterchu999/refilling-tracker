@@ -1,33 +1,35 @@
-import { Container, Form, Row, InputGroup, Col, Button, Modal } from 'solid-bootstrap'
-import { For, createSignal } from 'solid-js'
+import { Button, Col, Form, InputGroup, Modal, Row } from 'solid-bootstrap'
+import { createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import Datepicker from '../components/Datepicker'
-import { useNavigate } from '@solidjs/router'
-import { createQuery } from '@tanstack/solid-query'
 
 function UpdateExtingusiherModal({ show, setShow, refresh, data }) {
-  const navigate = useNavigate()
   const [validated, setValidated] = createSignal(false)
 
   const updateDataToDB = async ({ agent, netto, refilling_date, expire_date, tank_number }) => {
     const updateOnlineExtinguisher = () =>
-      window.api.updateExtinguisher({
+      window.api.updateExtinguisher(
+        data.id,
+        {
+          agent,
+          netto,
+          refilling_date,
+          expire_date,
+          tank_number
+        }
+      )
+
+    const result = await window.sqlite.refillDataDB?.updateData(
+      {
         agent,
         netto,
         refilling_date,
         expire_date,
         tank_number,
         id: data.id
-      })
-
-    const result = await window.sqlite.refillDataDB?.updateData({
-      agent,
-      netto,
-      refilling_date,
-      expire_date,
-      tank_number,
-      id: data.id
-    })
+      },
+      updateOnlineExtinguisher
+    )
     return result
   }
 
@@ -35,6 +37,7 @@ function UpdateExtingusiherModal({ show, setShow, refresh, data }) {
     const formTar = e.currentTarget
     if (formTar.checkValidity() === false) {
       setValidated(false)
+      throw new Error("invalid data")
     }
     // TODO: add more comprehend validation
     setValidated(true)
@@ -53,6 +56,7 @@ function UpdateExtingusiherModal({ show, setShow, refresh, data }) {
       setShow(false)
       refresh()
     } catch (err) {
+        console.log(err)
       alert(err)
       setValidated(false)
     }

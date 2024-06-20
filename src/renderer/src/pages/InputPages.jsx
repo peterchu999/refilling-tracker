@@ -20,7 +20,6 @@ function InputPages() {
       }
     }
   }))
-
   const insertDataToDB = async ({
     owner,
     agent,
@@ -37,7 +36,7 @@ function InputPages() {
         netto,
         refilling_date,
         expire_date,
-        owner_id: owner,
+        owner_id,
         tank_number
       })
 

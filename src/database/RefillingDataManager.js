@@ -63,8 +63,13 @@ const insertData = async (
       refilling_date,
       expire_date
     )
+
     const cbResult = await cb()
-    commit.run()
+    console.log(insertResult, cbResult)
+    // if (insertResult.id === cbResult.id) {
+      commit.run()
+    // }
+
     return { insertResult, cbResult }
   } catch (err) {
     console.error(err)
@@ -74,51 +79,46 @@ const insertData = async (
 }
 
 /**
- * Funcion to insert refilling data to database, Id would be auto incremented
+ * Funcion to update refilling data to database.
  * @param {{
-*  owner_id: number,
-*  tank_number: number,
-*  owner: string,
-*  agent: string,
-*  netto: number,
-*  refilling_date: Date,
-*  expire_date: Date,
-* }} data refilling datatype
-*
-*/
+ *  id: number,
+ *  tank_number: number,
+ *  agent: string,
+ *  netto: number,
+ *  refilling_date: Date,
+ *  expire_date: Date,
+ * }} data refilling datatype
+ *
+ */
 const updateData = async (
- { id, agent, netto, refilling_date, expire_date, tank_number },
- cb = async () => {}
+  { id, agent, netto, refilling_date, expire_date, tank_number },
+  cb = async () => {}
 ) => {
- const begin = db.prepare('BEGIN')
- const commit = db.prepare('COMMIT')
- const rollback = db.prepare('ROLLBACK')
- begin.run()
- try {
-   const insertScript = `UPDATE ${TABLE_NAME} SET tank_number = ?, agent = ?, netto = ?, refilling_date = ?, expire_date = ?, is_qr_printed = 0
-   WHERE id = ?`
+  const begin = db.prepare('BEGIN')
+  const commit = db.prepare('COMMIT')
+  const rollback = db.prepare('ROLLBACK')
+  begin.run()
+  try {
+    console.log(id)
+    const updateScript = `UPDATE ${TABLE_NAME} SET tank_number = ?, agent = ?, netto = ?, refilling_date = ?, expire_date = ?, is_qr_printed = 0
+    WHERE id = ?;`
 
-   const insertQuery = db.prepare(insertScript)
-   const insertResult = insertQuery.run(
-     tank_number,
-     agent,
-     netto,
-     refilling_date,
-     expire_date,
-     id
-   )
-   const cbResult = await cb()
-   commit.run()
-   return { insertResult, cbResult }
- } catch (err) {
-   console.error(err)
-   rollback.run()
-   throw err
- }
+    const updateQuery = db.prepare(updateScript)
+    console.log("update Query", updateQuery)
+    const updateResult = updateQuery.run(tank_number, agent, netto, refilling_date, expire_date, id)
+    console.log("updateResult",updateResult)
+    const cbResult = await cb()
+    commit.run()
+    return { updateResult, cbResult }
+  } catch (err) {
+    console.error(err)
+    rollback.run()
+    throw err
+  }
 }
 
 export default {
   fetchData,
   insertData,
-  updateData,
+  updateData
 }

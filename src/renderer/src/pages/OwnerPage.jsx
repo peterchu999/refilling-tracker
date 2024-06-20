@@ -23,10 +23,15 @@ function OwnerPage() {
     try {
       const salt = generateSaltKey()
       const encryptedPassword = window.api.encryptPassword(form.password)
-      const insertOnlineOwner = async () => window.sqlite.ownerDataDB.insertOwnerData({ ...form, id: result.id } )
-      const result = await window.api.insertOwner({ ...form, password: encryptedPassword, salt }, insertOnlineOwner)
+
+      const insertOnlineOwner = () =>
+        window.api.insertOwner({ ...form, password: encryptedPassword, salt })
+      const result = await window.sqlite.ownerDataDB.insertOwnerData(
+        { ...form },
+        insertOnlineOwner
+      )
       setValidated(true)
-      return inner
+      return result
     } catch (error) {
       setValidated(false)
       alert(error)
@@ -98,7 +103,7 @@ function OwnerPage() {
           <Text>Is loading</Text>
         </Match>
         <Match when={owners.data}>
-          <BTable class='mt-3' striped bordered hover responsive size="sm">
+          <BTable class="mt-3" striped bordered hover responsive size="sm">
             <thead>
               <tr>
                 <th>Nama Perusahaan</th>

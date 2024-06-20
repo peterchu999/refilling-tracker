@@ -23,8 +23,9 @@ export const insertExtinguisher = async ({
 export const updateExtinguisher = async (
   id,
   {  agent, netto, refilling_date, expire_date, tank_number }
-) =>
-  db
+) => {
+  console.log(id, agent, netto, refilling_date, expire_date, tank_number)
+  return db
     .updateTable(DATABASE_NAME)
     .set({
       ...(!!agent && { agent }),
@@ -35,3 +36,5 @@ export const updateExtinguisher = async (
     })
     .where('id', '=', id)
     .executeTakeFirst()
+}
+  
