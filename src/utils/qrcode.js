@@ -63,6 +63,6 @@ export const printQRToPdfFile = async (data) => {
 
     doc.save('qrcode.pdf')
   } catch (err) {
-    console.log(err)
+    alert(err)
   }
 }

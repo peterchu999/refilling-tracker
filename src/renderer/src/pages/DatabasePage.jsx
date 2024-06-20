@@ -8,6 +8,8 @@ import {
 import { Container, Table as BTable, Badge, Pagination, Button, Col, Row } from 'solid-bootstrap'
 import { For, Match, Switch, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { printQRToPdfFile } from '../../../utils/qrcode'
+import UpdateExtingusiherModal from '../modals/UpdateExtinguisherModal'
+import { createStore } from 'solid-js/store'
 
 const today = new Date()
 
@@ -83,6 +85,8 @@ const columns = [
 
 function DatabasePage() {
   const [selectedCount, setSelectedCount] = createSignal(0)
+  const [showModal, setShowModal] = createSignal(false)
+  const [editDataStore, setEditDataStore] = createStore({})
 
   const state = createQuery(() => ({
     queryKey: ['extinguisher'],
@@ -95,6 +99,10 @@ function DatabasePage() {
       }
     }
   }))
+
+  const refreshData = () => {
+    state.refetch()
+  }
 
   const table = createSolidTable({
     get data() {
@@ -127,7 +135,12 @@ function DatabasePage() {
 
   const printQR = async () => {
     const data = table.getSelectedRowModel().rows.map(({ original }) => original)
-    const state = printQRToPdfFile(data)
+    printQRToPdfFile(data)
+  }
+
+  const openModal = async (original) => {
+    setShowModal(true)
+    setEditDataStore({ ...original })
   }
 
   return (
@@ -165,6 +178,7 @@ function DatabasePage() {
                         </th>
                       )}
                     </For>
+                    <th>Edit</th>
                   </tr>
                 )}
               </For>
@@ -178,6 +192,11 @@ function DatabasePage() {
                         return <td>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       }}
                     </For>
+                    <td>
+                      <Button class="btn-sm btn-primary" onClick={() => openModal(row.original)}>
+                        Edit Row
+                      </Button>
+                    </td>
                   </tr>
                 )}
               </For>
@@ -212,6 +231,12 @@ function DatabasePage() {
           </Switch>
         </Match>
       </Switch>
+      <UpdateExtingusiherModal
+        show={showModal}
+        refresh={refreshData}
+        setShow={setShowModal}
+        data={editDataStore}
+      />
     </Container>
   )
 }
