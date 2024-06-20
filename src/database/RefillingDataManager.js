@@ -65,10 +65,8 @@ const insertData = async (
     )
 
     const cbResult = await cb()
-    console.log(insertResult, cbResult)
-    // if (insertResult.id === cbResult.id) {
-      commit.run()
-    // }
+
+    commit.run()
 
     return { insertResult, cbResult }
   } catch (err) {
@@ -99,14 +97,11 @@ const updateData = async (
   const rollback = db.prepare('ROLLBACK')
   begin.run()
   try {
-    console.log(id)
     const updateScript = `UPDATE ${TABLE_NAME} SET tank_number = ?, agent = ?, netto = ?, refilling_date = ?, expire_date = ?, is_qr_printed = 0
     WHERE id = ?;`
 
     const updateQuery = db.prepare(updateScript)
-    console.log("update Query", updateQuery)
     const updateResult = updateQuery.run(tank_number, agent, netto, refilling_date, expire_date, id)
-    console.log("updateResult",updateResult)
     const cbResult = await cb()
     commit.run()
     return { updateResult, cbResult }

@@ -24,7 +24,7 @@ export const updateExtinguisher = async (
   id,
   {  agent, netto, refilling_date, expire_date, tank_number }
 ) => {
-  console.log(id, agent, netto, refilling_date, expire_date, tank_number)
+
   return db
     .updateTable(DATABASE_NAME)
     .set({
