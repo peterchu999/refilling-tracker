@@ -1,4 +1,5 @@
-import { Container, Nav, Navbar } from "solid-bootstrap"
+import { Container, Nav, Navbar } from 'solid-bootstrap'
+import { A } from '@solidjs/router'
 
 function CustomNavbar() {
   return (
@@ -7,15 +8,14 @@ function CustomNavbar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav class="me-auto">
-            <Nav.Link href="/">Database</Nav.Link>
-            <Nav.Link href="/input">Input Data</Nav.Link>
-            <Nav.Link href="/owner">Owner Management</Nav.Link>
+            <A class="nav-link" href="/">Database</A>
+            <A class="nav-link" href="/input">Input Data</A>
+            <A class="nav-link" href="/owner">Owner Management</A>
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   )
 }
-
 
 export default CustomNavbar

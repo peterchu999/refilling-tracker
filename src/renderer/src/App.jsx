@@ -1,4 +1,4 @@
-import { Route, Router } from '@solidjs/router'
+import { HashRouter, Route } from '@solidjs/router'
 import InputPages from './pages/InputPages'
 import Navbar from './components/Navbar'
 import DatabasePage from './pages/DatabasePage'
@@ -19,11 +19,11 @@ function Root(props) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router root={Root} base="/">
+      <HashRouter root={Root} base="/">
         <Route path="/" component={DatabasePage} />
         <Route path="/input" component={InputPages} />
         <Route path="/owner" component={OwnerPage} />
-      </Router>
+      </HashRouter>
     </QueryClientProvider>
   )
 }
