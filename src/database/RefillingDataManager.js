@@ -16,9 +16,9 @@ const TABLE_NAME = 'extinguisher'
  *  is_qr_printed: boolean
  * }} refillingData
  */
-const fetchData = () => {
+const fetchData = (orderBy) => {
   try {
-    const query = `SELECT * FROM ${TABLE_NAME} ORDER BY created_at DESC`
+    const query = `SELECT * FROM ${TABLE_NAME} ORDER BY ${orderBy ? orderBy : 'created_at'} ASC`
     const readQuery = db.prepare(query)
     const rowList = readQuery.all()
     return rowList

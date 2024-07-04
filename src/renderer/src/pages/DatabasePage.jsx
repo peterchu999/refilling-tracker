@@ -3,13 +3,15 @@ import {
   createSolidTable,
   getCoreRowModel,
   flexRender,
-  getPaginationRowModel
+  getPaginationRowModel,
+  getFilteredRowModel
 } from '@tanstack/solid-table'
 import { Container, Table as BTable, Badge, Pagination, Button, Col, Row } from 'solid-bootstrap'
 import { For, Match, Switch, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { printQRToPdfFile } from '../../../utils/qrcode'
 import UpdateExtingusiherModal from '../modals/UpdateExtinguisherModal'
 import { createStore } from 'solid-js/store'
+import { rankItem } from '@tanstack/match-sorter-utils'
 
 const today = new Date()
 
@@ -87,13 +89,12 @@ function DatabasePage() {
   const [selectedCount, setSelectedCount] = createSignal(0)
   const [showModal, setShowModal] = createSignal(false)
   const [editDataStore, setEditDataStore] = createStore({})
-
+  const [filter, setFilter] = createSignal("")
   const state = createQuery(() => ({
     queryKey: ['extinguisher'],
     queryFn: async () => {
       try {
-        const result = window.sqlite.refillDataDB?.fetchData()
-        return result
+        return window.sqlite.refillDataDB?.fetchData('expire_date')
       } catch (error) {
         throw error
       }
@@ -104,14 +105,39 @@ function DatabasePage() {
     state.refetch()
   }
 
+  const fuzzyFilter = (row, columnId, value, addMeta) => {
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value)
+    // Store the itemRank info
+    addMeta({
+      itemRank
+    })
+
+    // Return if the item should be filtered in/out
+    return itemRank.passed
+  }
+
   const table = createSolidTable({
     get data() {
       return state.data ?? []
     },
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    enableMultiRowSelection: true
+    getFilteredRowModel: getFilteredRowModel(),
+    enableMultiRowSelection: true,
+    get state() {
+      return {
+        get globalFilter() {
+          return filter()
+        }
+      }
+    },
+    globalFilterFn: 'fuzzy',
+    onGlobalFilterChange: setFilter
   })
 
   onMount(() => {
@@ -152,6 +178,15 @@ function DatabasePage() {
             <Button class="btn-sm btn-warning text-bold" onClick={resetTableSelection}>
               Reset Selection
             </Button>
+          </Col>
+          <Col>
+            <input
+              value={filter()}
+              onChange={(e) => {
+                setFilter(e.target.value)
+              }}
+              placeholder="Search all columns..."
+            />
           </Col>
           <Col class="d-flex align-items-center justify-content-end">
             Selected Row: {selectedCount()}
