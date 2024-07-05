@@ -42,7 +42,7 @@ function OwnerPage() {
     queryKey: ['owners'],
     queryFn: async () => {
       try {
-        const result = window.api.fetchOwners()
+        const result = window.sqlite.ownerDataDB?.fetchOwnerData()
         return result
       } catch (error) {
         throw error
