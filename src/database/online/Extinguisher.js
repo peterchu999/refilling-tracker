@@ -2,7 +2,9 @@ import { createKysely } from '@vercel/postgres-kysely'
 
 const DATABASE_NAME = 'Extinguisher'
 
-const db = createKysely()
+const db = createKysely({
+  connectionString: import.meta.env.VITE_POSTGRES_URL,
+})
 
 export const insertExtinguisher = async ({
   agent,

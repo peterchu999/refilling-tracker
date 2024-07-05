@@ -17,7 +17,7 @@ const api = {
   updateExtinguisher,
   onClearPrintQRSelection: (cb) => ipcRenderer.on('clear-print-qr-selection',(_event, value) => cb(value)),
   cleanOnClearPrintQRSelection: () => ipcRenderer.removeAllListeners('clear-print-qr-selection'),
-  encryptPassword: (password) => uEncryptPassword(password, process.env.SALT_KEY)
+  encryptPassword: (password) => uEncryptPassword(password, import.meta.env.VITE_SALT_KEY)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

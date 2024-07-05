@@ -2,7 +2,10 @@ import { createKysely } from '@vercel/postgres-kysely'
 
 const DATABASE_NAME = 'Owner'
 
-const db = createKysely()
+const db = createKysely({
+  connectionString: import.meta.env.VITE_POSTGRES_URL,
+})
+
 
 export const insertOwner = async ({ name, username, password, salt }) =>
   db.insertInto(DATABASE_NAME).values({ name, username, password, salt }).returningAll().executeTakeFirstOrThrow()
