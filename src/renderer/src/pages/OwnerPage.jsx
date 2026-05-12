@@ -5,39 +5,6 @@ import { encryptPassword, generateSaltKey } from '../../../utils/auth'
 import { createQuery } from '@tanstack/solid-query'
 
 function OwnerPage() {
-  const validateAndInsertData = (e) => {
-    const formTar = e.currentTarget
-    if (formTar.checkValidity() === false) {
-      setValidated(false)
-    }
-
-    // TODO: add more comprehend validation
-    // setValidated(true)
-  }
-
-  const onSubmit = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    await validateAndInsertData(e)
-
-    try {
-      const salt = generateSaltKey()
-      const encryptedPassword = window.api.encryptPassword(form.password)
-
-      const insertOnlineOwner = () =>
-        window.api.insertOwner({ ...form, password: encryptedPassword, salt })
-      const result = await window.sqlite.ownerDataDB.insertOwnerData(
-        { ...form },
-        insertOnlineOwner
-      )
-      setValidated(true)
-      return result
-    } catch (error) {
-      setValidated(false)
-      alert(error)
-    }
-  }
-
   const owners = createQuery(() => ({
     queryKey: ['owners'],
     queryFn: async () => {
@@ -57,6 +24,34 @@ function OwnerPage() {
     username: null,
     password: null
   })
+
+  const validateAndInsertData = (e) => {
+    const formTar = e.currentTarget
+    if (formTar.checkValidity() === false) {
+      setValidated(false)
+    }
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    await validateAndInsertData(e)
+
+    try {
+      const salt = generateSaltKey()
+      const encryptedPassword = window.api.encryptPassword(form.password)
+
+      const insertOnlineOwner = () =>
+        window.api.insertOwner({ ...form, password: encryptedPassword, salt })
+      const result = await window.sqlite.ownerDataDB.insertOwnerData({ ...form }, insertOnlineOwner)
+      setValidated(true)
+      owners.refetch()
+      return result
+    } catch (error) {
+      setValidated(false)
+      alert(error)
+    }
+  }
 
   return (
     <Container fluid>
